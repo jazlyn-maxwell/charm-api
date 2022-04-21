@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  
+positions:
+  filename: /tmp/positions.yaml
+  
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    external_labels:
+      host: docker
+  
+scrape_configs:
+  - job_name: loki
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: charm-shop
+          __path__: /var/log/application.log
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+      - labels:
+          level:
